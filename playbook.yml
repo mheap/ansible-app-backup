@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: false
+  roles:
+      - role: mheap.app-backup
+        name: Nice Name
+        working_dir: /var/www/site
+        db_name: my_database
+        db_user: username
+        db_pass: password
+

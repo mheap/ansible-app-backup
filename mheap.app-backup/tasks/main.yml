@@ -1,0 +1,30 @@
+---
+# tasks file for mheap.app-backup
+- name: "{{ name }} | Create backup dir"
+  command: mktemp -d "{{ lookup('env', 'TMPDIR') | default('/tmp/', true) }}ansible.XXXX"
+  register: backup_dir_full
+
+- name: "{{name}} | Set backup dir"
+  set_fact: backup_dir={{backup_dir_full.stdout}}
+
+- name: "{{name}} | Dump database (root)"
+  mysql_db: state=dump name={{db_name}} target={{backup_dir}}/{{db_name}}.sql
+  become: true
+  when: db_user is not defined
+
+- name: "{{name}} | Dump database (user)"
+  mysql_db: state=dump name={{db_name}} login_user={{db_user}} login_password={{db_pass}} target={{backup_dir}}/{{db_name}}.sql
+  when: db_user is defined
+
+- name: "{{name}} | Sync files"
+  synchronize: src={{working_dir}} dest={{backup_dir}}
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: "{{name}} | Create archive"
+  archive: path="{{backup_dir}}/*" dest={{backup_dir}}/{{name}}.zip format=zip
+
+- name: "{{name}} | Fetch files"
+  fetch: src={{backup_dir}}/{{name}}.zip dest=. flat=yes
+
+- name: "{{name}} | Cleanup {{backup_dir}}"
+  file: path={{backup_dir}} state=absent

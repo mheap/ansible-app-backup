@@ -1,0 +1,25 @@
+galaxy_info:
+  author: Michael Heap
+  description: your description
+  company: Intechrity Ltd
+  license: MIT
+  min_ansible_version: 2.3
+
+  platforms:
+  - name: Fedora
+    versions:
+      - all
+  - name: GenericLinux
+    versions:
+      - all
+  - name: ArchLinux
+    versions:
+      - all
+  - name: Ubuntu
+    versions:
+      - all
+  - name: Debian
+    versions:
+      - all
+
+  galaxy_tags: [backup]
